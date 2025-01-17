@@ -1,0 +1,56 @@
+<!-- templates/call.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h1>Call #{{ call.id }} Actions</h1>
+    
+    <div id="actions-list">
+        {% for action in call.actions %}
+        <div class="action-item" id="action-{{ action.id }}">
+            <div class="action-content">
+                {{ action.description }}
+            </div>
+            <div class="action-controls">
+                <button class="btn btn-edit"
+                    hx-get="/action/edit/{{ action.id }}"
+                    hx-target="#action-{{ action.id }}"
+                    hx-swap="innerHTML">
+                    Edit
+                </button>
+                <button class="btn btn-delete"
+                    hx-delete="/action/{{ action.id }}"
+                    hx-target="#action-{{ action.id }}"
+                    hx-swap="outerHTML">
+                    Remove
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="add-action-form">
+        <form hx-post="/action/add/{{ call.id }}"
+              hx-target="#actions-list"
+              hx-swap="beforeend">
+            <input type="text" name="description" placeholder="New action description" required>
+            <button class="btn btn-add" type="submit">Add Action</button>
+        </form>
+    </div>
+</div>
+
+<!-- Template for edit form (returned by /action/edit/{id}) -->
+{% raw %}
+<form hx-post="/action/edit/{{ action.id }}"
+      hx-target="#action-{{ action.id }}"
+      hx-swap="outerHTML">
+    <input type="text" name="description" value="{{ action.description }}" required>
+    <button class="btn btn-edit" type="submit">Save</button>
+    <button class="btn" type="button"
+        hx-get="/call/{{ call.id }}"
+        hx-target="#action-{{ action.id }}"
+        hx-swap="outerHTML">
+        Cancel
+    </button>
+</form>
+{% endraw %}
+{% endblock %}

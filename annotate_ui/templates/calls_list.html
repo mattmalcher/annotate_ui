@@ -1,0 +1,14 @@
+<!-- templates/calls_list.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h1>Available Calls</h1>
+    <div class="calls-list">
+        {% for call in calls %}
+        <div class="call-item">
+            <a href="/call/{{ call.id }}">Call #{{ call.id }} ({{ call.actions|length }} actions)</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
