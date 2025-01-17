@@ -1,5 +1,4 @@
 <!-- Template for edit form (returned by /action/edit/{id}) -->
-{% raw %}
 <form hx-post="/action/edit/{{ action.id }}"
       hx-target="#action-{{ action.id }}"
       hx-swap="outerHTML">
@@ -12,4 +11,3 @@
         Cancel
     </button>
 </form>
-{% endraw %}
