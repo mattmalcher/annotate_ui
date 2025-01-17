@@ -1,15 +1,12 @@
-<!-- templates/action_item.html -->
 <div class="action-item" id="action-{{ action.id }}">
-    <div class="action-content">
+    <div class="action-content"
+         hx-get="/action/edit/{{ action.id }}"
+         hx-target="#action-{{ action.id }}"
+         hx-swap="innerHTML"
+         style="cursor: pointer">
         {{ action.description }}
     </div>
     <div class="action-controls">
-        <button class="btn btn-edit"
-            hx-get="/action/edit/{{ action.id }}"
-            hx-target="#action-{{ action.id }}"
-            hx-swap="innerHTML">
-            Edit
-        </button>
         <button class="btn btn-delete"
             hx-delete="/action/{{ action.id }}"
             hx-target="#action-{{ action.id }}"
