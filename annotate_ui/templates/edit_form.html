@@ -1,0 +1,15 @@
+<!-- Template for edit form (returned by /action/edit/{id}) -->
+{% raw %}
+<form hx-post="/action/edit/{{ action.id }}"
+      hx-target="#action-{{ action.id }}"
+      hx-swap="outerHTML">
+    <input type="text" name="description" value="{{ action.description }}" required>
+    <button class="btn btn-edit" type="submit">Save</button>
+    <button class="btn" type="button"
+        hx-get="/action/{{ action.id }}"
+        hx-target="#action-{{ action.id }}"
+        hx-swap="outerHTML">
+        Cancel
+    </button>
+</form>
+{% endraw %}

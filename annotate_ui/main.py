@@ -55,14 +55,41 @@ async def get_call(request: Request, call_id: int):
         {"request": request, "call": call}
     )
 
+@app.get("/action/{action_id}")
+async def get_action(request: Request, action_id: int):
+    # Find the action and return just that action's HTML
+    for call in calls_db.values():
+        for action in call.actions:
+            if action.id == action_id:
+                return templates.TemplateResponse(
+                    "action_item.html",
+                    {"request": request, "action": action, "call": call}
+                )
+    return {"error": "Action not found"}
+
+@app.get("/action/edit/{action_id}")
+async def get_edit_form(request: Request, action_id: int):
+    # Find the action and its associated call
+    for call in calls_db.values():
+        for action in call.actions:
+            if action.id == action_id:
+                return templates.TemplateResponse(
+                    "edit_form.html",
+                    {"request": request, "action": action, "call": call}
+                )
+    return {"error": "Action not found"}
+
 @app.post("/action/edit/{action_id}")
-async def edit_action(action_id: int, description: str = Form(...)):
+async def edit_action(request: Request, action_id: int, description: str = Form(...)):
     # Mock update - replace with database update in production
     for call in calls_db.values():
         for action in call.actions:
             if action.id == action_id:
                 action.description = description
-                return {"description": description}
+                return templates.TemplateResponse(
+                    "action_item.html",
+                    {"request": request, "action": action, "call": call}
+                )
     return {"error": "Action not found"}
 
 @app.delete("/action/{action_id}")
@@ -73,14 +100,17 @@ async def delete_action(action_id: int):
     return {"success": True}
 
 @app.post("/action/add/{call_id}")
-async def add_action(call_id: int, description: str = Form(...)):
+async def add_action(request: Request, call_id: int, description: str = Form(...)):
     # Mock add - replace with database insert in production
     call = calls_db.get(call_id)
     if call:
-        new_id = max([a.id for a in call.actions]) + 1
+        new_id = max([a.id for a in call.actions]) + 1 if call.actions else 1
         new_action = Action(id=new_id, description=description)
         call.actions.append(new_action)
-        return {"id": new_id, "description": description}
+        return templates.TemplateResponse(
+            "action_item.html",
+            {"request": request, "action": new_action, "call": call}
+        )
     return {"error": "Call not found"}
 
 if __name__ == "__main__":
