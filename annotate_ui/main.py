@@ -120,5 +120,24 @@ async def add_action(request: Request, call_id: int, description: str = Form(...
     return {"error": "Call not found"}
 
 
+@app.post("/call/{call_id}/reorder")
+async def reorder_actions(call_id: int, request: Request):
+    # Get the new order from the HTMX sortable extension
+    form = await request.form()
+    new_order = form.getlist('item')
+    
+    # Get the call
+    call = calls_db.get(call_id)
+    if not call:
+        return {"error": "Call not found"}
+        
+    # Create a mapping of action_id to action
+    action_map = {str(action.id): action for action in call.actions}
+    
+    # Reorder the actions based on the new order
+    call.actions = [action_map[action_id] for action_id in new_order if action_id in action_map]
+    
+    return templates.TemplateResponse("action_list.html", {"request": request, "call": call})
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

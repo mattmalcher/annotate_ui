@@ -1,9 +1,39 @@
 <!-- templates/base.html -->
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Call Annotation Tool</title>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://www.unpkg.com/sortablejs@1.15.6/Sortable.min.js"></script>
+    <script>
+        htmx.onLoad(function (content) {
+            var sortables = content.querySelectorAll(".sortable");
+            for (var i = 0; i < sortables.length; i++) {
+                var sortable = sortables[i];
+                var sortableInstance = new Sortable(sortable, {
+                    animation: 150,
+                    ghostClass: 'blue-background-class',
+
+                    // Make the `.htmx-indicator` unsortable
+                    filter: ".htmx-indicator",
+                    onMove: function (evt) {
+                        return evt.related.className.indexOf('htmx-indicator') === -1;
+                    },
+
+                    // Disable sorting on the `end` event
+                    onEnd: function (evt) {
+                        this.option("disabled", true);
+                    }
+                });
+
+                // Re-enable sorting on the `htmx:afterSwap` event
+                sortable.addEventListener("htmx:afterSwap", function () {
+                    sortableInstance.option("disabled", false);
+                });
+            }
+        })
+    </script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,34 +41,41 @@
             margin: 0 auto;
             padding: 20px;
         }
+
         .action-item {
             border: 1px solid #ddd;
             padding: 10px;
             margin: 5px 0;
             border-radius: 4px;
         }
+
         .action-controls {
             display: flex;
             gap: 10px;
             margin-top: 5px;
         }
+
         .btn {
             padding: 5px 10px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
         }
+
         .btn-edit {
             background-color: #ffd700;
         }
+
         .btn-delete {
             background-color: #ff6b6b;
             color: white;
         }
+
         .btn-add {
             background-color: #4CAF50;
             color: white;
         }
+
         input[type="text"] {
             padding: 5px;
             margin-right: 5px;
@@ -46,9 +83,18 @@
             border-radius: 4px;
             min-width: 300px;
         }
+
+        .drag-handle {
+            cursor: move;
+            padding: 5px;
+            color: #666;
+            margin-right: 8px;
+        }
     </style>
 </head>
+
 <body>
     {% block content %}{% endblock %}
 </body>
+
 </html>
